@@ -1,68 +1,56 @@
-import { fetchAllPlayers } from "@/lib/slippi";
+import { Suspense } from "react";
+import { fetchAllPlayers } from "@/lib/fetch-players";
 import { PLAYERS, LEADERBOARD_TITLE, LEADERBOARD_REGION } from "@/config/players";
-import PlayerRow from "@/components/PlayerRow";
-
-export const revalidate = 43200; // 12 hours
+import LeaderboardView from "@/components/LeaderboardView";
+import Timestamp from "@/components/Timestamp";
 
 export default async function Home() {
-  const players = PLAYERS.length > 0 ? await fetchAllPlayers(PLAYERS) : [];
-  const updatedAt = new Date().toLocaleString("en-CA", {
-    timeZone: "America/Toronto",
-    dateStyle: "medium",
-    timeStyle: "short",
-  });
+  let players: import("@/lib/slippi").SlippiPlayer[] = [];
+  let fetchError = false;
+  if (PLAYERS.length > 0) {
+    try {
+      players = await fetchAllPlayers(PLAYERS);
+    } catch {
+      fetchError = true;
+    }
+  }
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100">
-      <div className="mx-auto max-w-4xl px-4 py-10">
+    <div className="min-h-screen bg-[#222224]">
+      {/* Canadian header bar */}
+      <div className="w-full px-6 py-3 flex items-center gap-3 bg-[#cc0000] border-b border-[#990000]">
+        <span className="text-2xl leading-none">🍁</span>
+        <span className="text-white font-bold text-lg tracking-wide">
+          {LEADERBOARD_REGION} · Slippi
+        </span>
+      </div>
+
+      <div className="mx-auto max-w-5xl px-4 py-8">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-2 text-sm text-zinc-500 mb-2">
-            <span className="inline-block w-2 h-2 rounded-full bg-indigo-500"></span>
-            {LEADERBOARD_REGION} · Slippi Ranked
-          </div>
-          <h1 className="text-3xl font-bold tracking-tight text-white">
-            {LEADERBOARD_TITLE}
-          </h1>
-          <p className="mt-1 text-sm text-zinc-500">
-            Updated every 12 hours · Last cached:{" "}
-            <span className="text-zinc-400">{updatedAt} ET</span>
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-[#f2f2f7]">{LEADERBOARD_TITLE}</h1>
+          <p className="mt-1 text-sm text-[#636366]">
+            Updates every 12 hours · Last cached: <Suspense fallback={null}><Timestamp /></Suspense>
+            <span className="ml-3">· {players.length} players</span>
           </p>
         </div>
 
-        {/* Table */}
         {players.length === 0 ? (
-          <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-6 py-16 text-center">
-            <p className="text-zinc-500 text-lg">
+          <div className="rounded-lg px-6 py-16 text-center bg-[#2c2c2e] border border-[#48484a]">
+            <p className="text-[#636366] text-base">
               {PLAYERS.length === 0
-                ? "No players configured yet. Add connect codes to src/config/players.ts"
-                : "Could not load player data. The Slippi API may be temporarily unavailable."}
+                ? "No players configured — add connect codes to src/config/players.ts"
+                : fetchError
+                ? "Could not load player data. The Slippi API may be temporarily unavailable."
+                : "No player data returned."}
             </p>
           </div>
         ) : (
-          <div className="rounded-xl border border-zinc-800 bg-zinc-900 overflow-hidden">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-zinc-800 text-zinc-500 text-xs uppercase tracking-wider">
-                  <th className="py-3 px-4 text-center w-10">#</th>
-                  <th className="py-3 px-4 text-left">Player</th>
-                  <th className="py-3 px-4 text-center hidden sm:table-cell">Rank</th>
-                  <th className="py-3 px-4 text-right">Rating</th>
-                  <th className="py-3 px-4 text-center hidden md:table-cell">W / L</th>
-                  <th className="py-3 px-4 text-left hidden lg:table-cell">Main</th>
-                </tr>
-              </thead>
-              <tbody>
-                {players.map((player, i) => (
-                  <PlayerRow key={player.connectCode} player={player} position={i + 1} />
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <LeaderboardView players={players} />
         )}
 
-        <p className="mt-6 text-xs text-zinc-600 text-center">
-          Data sourced from the unofficial Slippi GG API · May not reflect real-time rankings
+        <p className="mt-5 text-xs text-[#48484a] text-center">
+          Data from the unofficial Slippi GG API · Rankings may not reflect real-time standings
         </p>
       </div>
     </div>

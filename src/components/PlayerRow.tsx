@@ -1,11 +1,10 @@
-import { SlippiPlayer, getCharacterName } from "@/lib/slippi";
+"use client";
+import { SlippiPlayer } from "@/lib/slippi";
 import RankBadge from "./RankBadge";
+import CharacterBubbles from "./CharacterBubble";
+import { useState } from "react";
 
-const POSITION_STYLES: Record<number, string> = {
-  1: "text-yellow-400 font-bold",
-  2: "text-slate-300 font-bold",
-  3: "text-amber-600 font-bold",
-};
+const MEDAL: Record<number, string> = { 1: "#f5c518", 2: "#a0a0b0", 3: "#cd7f3c" };
 
 export default function PlayerRow({
   player,
@@ -14,53 +13,90 @@ export default function PlayerRow({
   player: SlippiPlayer;
   position: number;
 }) {
+  const [hovered, setHovered] = useState(false);
   const winRate =
     player.wins + player.losses > 0
       ? ((player.wins / (player.wins + player.losses)) * 100).toFixed(1)
-      : "—";
-
-  const mainChar = player.characters[0];
+      : null;
 
   return (
-    <tr className="border-b border-zinc-800 hover:bg-zinc-800/50 transition-colors">
-      <td className="py-3 px-4 text-center w-10">
-        <span className={POSITION_STYLES[position] ?? "text-zinc-400"}>
+    <tr
+      style={{ backgroundColor: hovered ? "#3a3a3c" : "transparent" }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      className="border-b border-[#48484a] transition-colors"
+    >
+      {/* Position */}
+      <td className="py-4 px-5 text-center w-14">
+        <span
+          className="text-xl font-bold"
+          style={{ color: MEDAL[position] ?? "#636366" }}
+        >
           {position}
         </span>
       </td>
-      <td className="py-3 px-4">
-        <div className="flex flex-col gap-0.5">
-          <a
-            href={`https://slippi.gg/user/${player.connectCode.replace("#", "-")}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-semibold text-white hover:text-indigo-400 transition-colors"
-          >
-            {player.displayName}
-          </a>
-          <span className="text-xs text-zinc-500">{player.connectCode}</span>
+
+      {/* Player */}
+      <td className="py-4 px-4">
+        <div className="flex flex-col">
+          <div className="flex items-center gap-2">
+            <a
+              href={`https://slippi.gg/user/${player.connectCode.replace("#", "-")}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-[#f2f2f7] hover:text-[#21BA45] transition-colors"
+            >
+              {player.displayName}
+            </a>
+            <span
+              className="text-[10px] font-bold px-1.5 py-0.5 rounded"
+              style={{ background: "#cc000022", color: "#ff4444", border: "1px solid #cc000044" }}
+            >
+              {player.province}
+            </span>
+          </div>
+          <span className="text-xs mt-0.5 text-[#636366]">{player.connectCode}</span>
         </div>
       </td>
-      <td className="py-3 px-4 text-center hidden sm:table-cell">
-        <RankBadge rank={player.rank} tier={player.rankTier} />
-      </td>
-      <td className="py-3 px-4 text-right font-mono tabular-nums">
-        {player.placed ? player.ratingOrdinal.toFixed(1) : "—"}
-      </td>
-      <td className="py-3 px-4 text-center text-sm text-zinc-400 hidden md:table-cell">
+
+      {/* Characters */}
+      <td className="py-4 px-4 hidden sm:table-cell">
         {player.placed ? (
-          <span>
-            <span className="text-green-400">{player.wins}W</span>
-            {" / "}
-            <span className="text-red-400">{player.losses}L</span>
-            <span className="ml-1 text-zinc-500">({winRate}%)</span>
-          </span>
+          <CharacterBubbles characters={player.characters} />
         ) : (
-          <span className="text-zinc-600">Not placed</span>
+          <span className="text-xs text-[#636366]">—</span>
         )}
       </td>
-      <td className="py-3 px-4 text-sm text-zinc-400 hidden lg:table-cell">
-        {mainChar ? getCharacterName(mainChar.character) : "—"}
+
+      {/* Rank */}
+      <td className="py-4 px-4 hidden md:table-cell">
+        <RankBadge rank={player.rank} tier={player.rankTier} />
+      </td>
+
+      {/* Rating */}
+      <td className="py-4 px-4 text-right">
+        <span
+          className="text-base font-semibold font-mono tabular-nums"
+          style={{ color: player.placed ? "#f2f2f7" : "#636366" }}
+        >
+          {player.placed ? player.ratingOrdinal.toFixed(1) : "—"}
+        </span>
+      </td>
+
+      {/* W / L */}
+      <td className="py-4 px-5 text-right hidden lg:table-cell">
+        {player.placed ? (
+          <span className="font-mono text-sm tabular-nums">
+            <span style={{ color: "#30d158" }}>{player.wins}</span>
+            <span className="text-[#636366]"> / </span>
+            <span style={{ color: "#ff9f0a" }}>{player.losses}</span>
+            {winRate && (
+              <span className="ml-2 text-xs text-[#636366]">{winRate}%</span>
+            )}
+          </span>
+        ) : (
+          <span className="text-xs text-[#636366]">Not placed</span>
+        )}
       </td>
     </tr>
   );
