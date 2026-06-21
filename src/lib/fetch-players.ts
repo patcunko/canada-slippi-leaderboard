@@ -4,21 +4,18 @@ import { SlippiPlayer, getRank, SlippiCharacter } from "@/lib/slippi";
 const SLIPPI_GQL_ENDPOINT = "https://internal.slippi.gg/graphql";
 const FIREBASE_API_KEY = "AIzaSyAuQqc_wgqcUu3FqrICEPZ9Av_hPxMR_i4";
 
-const PLAYER_QUERY = `
-query UserProfilePageQuery($cc: String, $uid: String) {
-  getUser(connectCode: $cc, fbUid: $uid) {
-    displayName
-    connectCode { code }
-    rankedNetplayProfile {
-      ratingOrdinal
-      wins
-      losses
-      dailyGlobalPlacement
-      continent
-      characters { character gameCount }
-    }
+const PLAYER_FIELDS = `
+  displayName
+  connectCode { code }
+  rankedNetplayProfile {
+    ratingOrdinal
+    wins
+    losses
+    dailyGlobalPlacement
+    continent
+    characters { character gameCount }
   }
-}`;
+`;
 
 async function getFirebaseIdToken(): Promise<string | null> {
   const refreshToken = process.env.SLIPPI_REFRESH_TOKEN;
@@ -39,57 +36,69 @@ async function getFirebaseIdToken(): Promise<string | null> {
   }
 }
 
-async function fetchSlippiPlayer(
-  config: PlayerConfig,
-  authHeader: string | null
-): Promise<SlippiPlayer | null> {
-  const cc = config.code.toUpperCase();
-  try {
-    const headers: Record<string, string> = {
-      "Content-Type": "application/json",
-      "User-Agent": "slippi-launcher/3.6.0 (darwin; x64)",
-    };
-    if (authHeader) headers["Authorization"] = authHeader;
+function parsePlayer(user: Record<string, unknown>, province: string): SlippiPlayer | null {
+  if (!user) return null;
+  const profile = user.rankedNetplayProfile as Record<string, unknown> | null;
+  if (!profile) return null;
+  const wins = (profile.wins as number) ?? 0;
+  const losses = (profile.losses as number) ?? 0;
+  const placed = wins + losses >= 5;
+  const elo = profile.ratingOrdinal as number;
+  const dailyPlacement = (profile.dailyGlobalPlacement as number | null) ?? null;
+  const { name: rankName, tier: rankTier } = placed
+    ? getRank(elo, dailyPlacement)
+    : { name: "Unranked", tier: "unranked" as const };
+  const connectCodeObj = user.connectCode as { code: string };
+  return {
+    displayName: user.displayName as string,
+    connectCode: connectCodeObj.code,
+    province,
+    ratingOrdinal: placed ? elo : 0,
+    wins,
+    losses,
+    dailyGlobalPlacement: dailyPlacement,
+    continent: (profile.continent as string | null) ?? null,
+    characters: [...((profile.characters as SlippiCharacter[]) ?? [])].sort(
+      (a, b) => b.gameCount - a.gameCount
+    ),
+    rank: rankName,
+    rankTier,
+    placed,
+  };
+}
 
-    const response = await fetch(SLIPPI_GQL_ENDPOINT, {
+// Fetch a batch of players in a single GraphQL request using aliases
+async function fetchBatch(
+  configs: PlayerConfig[],
+  authHeader: string | null
+): Promise<(SlippiPlayer | null)[]> {
+  const aliases = configs
+    .map((c, i) => {
+      const cc = c.code.toUpperCase();
+      return `p${i}: getUser(connectCode: "${cc}", fbUid: "${cc}") { ${PLAYER_FIELDS} }`;
+    })
+    .join("\n");
+
+  const query = `query BatchQuery { ${aliases} }`;
+
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    "User-Agent": "slippi-launcher/3.6.0 (darwin; x64)",
+  };
+  if (authHeader) headers["Authorization"] = authHeader;
+
+  try {
+    const res = await fetch(SLIPPI_GQL_ENDPOINT, {
       method: "POST",
       headers,
-      body: JSON.stringify({
-        operationName: "UserProfilePageQuery",
-        query: PLAYER_QUERY,
-        variables: { cc, uid: cc },
-      }),
+      body: JSON.stringify({ query }),
     });
-    if (!response.ok) return null;
-    const json = await response.json();
-    const user = json?.data?.getUser;
-    if (!user) return null;
-    const profile = user.rankedNetplayProfile;
-    if (!profile) return null;
-    const wins = profile.wins ?? 0;
-    const losses = profile.losses ?? 0;
-    const placed = wins + losses >= 5;
-    const { name: rankName, tier: rankTier } = placed
-      ? getRank(profile.ratingOrdinal, profile.dailyGlobalPlacement ?? null)
-      : { name: "Unranked", tier: "unranked" as const };
-    return {
-      displayName: user.displayName,
-      connectCode: user.connectCode.code,
-      province: config.province,
-      ratingOrdinal: placed ? profile.ratingOrdinal : 0,
-      wins,
-      losses,
-      dailyGlobalPlacement: profile.dailyGlobalPlacement ?? null,
-      continent: profile.continent ?? null,
-      characters: [...(profile.characters ?? [])].sort(
-        (a: SlippiCharacter, b: SlippiCharacter) => b.gameCount - a.gameCount
-      ),
-      rank: rankName,
-      rankTier,
-      placed,
-    };
+    if (!res.ok) return configs.map(() => null);
+    const json = await res.json();
+    if (!json?.data) return configs.map(() => null);
+    return configs.map((c, i) => parsePlayer(json.data[`p${i}`], c.province));
   } catch {
-    return null;
+    return configs.map(() => null);
   }
 }
 
@@ -97,16 +106,14 @@ export async function fetchAllPlayers(configs: PlayerConfig[]): Promise<SlippiPl
   const idToken = await getFirebaseIdToken();
   const authHeader = idToken ? `Bearer ${idToken}` : null;
 
-  const BATCH = 10;
-  const DELAY_MS = 100;
+  // 30 players per HTTP request = ~10 requests total for 300 players
+  const BATCH = 30;
   const results: (SlippiPlayer | null)[] = [];
   for (let i = 0; i < configs.length; i += BATCH) {
-    if (i > 0) await new Promise((r) => setTimeout(r, DELAY_MS));
-    const batch = await Promise.all(
-      configs.slice(i, i + BATCH).map((c) => fetchSlippiPlayer(c, authHeader))
-    );
+    const batch = await fetchBatch(configs.slice(i, i + BATCH), authHeader);
     results.push(...batch);
   }
+
   const valid = results.filter((p): p is SlippiPlayer => p !== null);
 
   if (valid.length === 0) {
