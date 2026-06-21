@@ -13,6 +13,16 @@ export default function Home() {
         <span className="text-white font-bold text-lg tracking-wide">
           {LEADERBOARD_REGION} · Slippi
         </span>
+        <div className="ml-auto">
+          <a
+            href="https://docs.google.com/forms/d/e/1FAIpQLSdJgzCGLwyrMuMij9gt5oCyeQId5a1-6qYA4gpvZsYqIpD3TA/viewform?usp=publish-editor"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block bg-white text-[#cc0000] font-semibold text-sm px-3 py-1.5 rounded hover:bg-[#f2f2f7] transition-colors"
+          >
+            + Add your tag
+          </a>
+        </div>
       </div>
 
       <div className="mx-auto max-w-5xl px-4 py-8">

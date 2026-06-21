@@ -221,6 +221,7 @@ export const PLAYERS: PlayerConfig[] = [
   { code: "BAKE#242",   province: "ON" },
   { code: "UNCL#225",   province: "ON" },
   { code: "DRNT#0",     province: "ON" },
+  { code: "KERR#567",   province: "ON" },
 
   // Quebec
   { code: "OLIP#180",   province: "QC" },
