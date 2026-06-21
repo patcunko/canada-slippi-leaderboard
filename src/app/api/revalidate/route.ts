@@ -6,6 +6,6 @@ export async function POST(req: NextRequest) {
   if (secret !== process.env.REVALIDATE_SECRET) {
     return Response.json({ error: "Invalid secret" }, { status: 401 });
   }
-  revalidateTag("players");
+  revalidateTag("players", "max");
   return Response.json({ revalidated: true });
 }
