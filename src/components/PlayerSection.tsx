@@ -6,7 +6,7 @@ import LeaderboardView from "@/components/LeaderboardView";
 export default async function PlayerSection() {
   "use cache";
   cacheLife("hours");
-  cacheTag("players");
+  cacheTag("players-v3");
 
   const players = await fetchAllPlayers(PLAYERS);
   return <LeaderboardView players={players} />;

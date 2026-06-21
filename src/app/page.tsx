@@ -4,6 +4,8 @@ import PlayerSection from "@/components/PlayerSection";
 import PlayerErrorBoundary from "@/components/PlayerErrorBoundary";
 import Timestamp from "@/components/Timestamp";
 
+export const maxDuration = 60;
+
 export default function Home() {
   return (
     <div className="min-h-screen bg-[#222224]">

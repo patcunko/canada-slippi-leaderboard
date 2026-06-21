@@ -97,8 +97,8 @@ export async function fetchAllPlayers(configs: PlayerConfig[]): Promise<SlippiPl
   const idToken = await getFirebaseIdToken();
   const authHeader = idToken ? `Bearer ${idToken}` : null;
 
-  const BATCH = 5;
-  const DELAY_MS = 500;
+  const BATCH = 10;
+  const DELAY_MS = 100;
   const results: (SlippiPlayer | null)[] = [];
   for (let i = 0; i < configs.length; i += BATCH) {
     if (i > 0) await new Promise((r) => setTimeout(r, DELAY_MS));
