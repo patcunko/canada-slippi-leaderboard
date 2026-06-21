@@ -60,17 +60,21 @@ export default function PlayerRow({
       </td>
 
       {/* Characters */}
-      <td className="py-4 px-4 hidden sm:table-cell">
+      <td className="py-4 px-4 hidden sm:table-cell text-center">
         {player.placed ? (
-          <CharacterBubbles characters={player.characters} />
+          <div className="flex justify-center">
+            <CharacterBubbles characters={player.characters} />
+          </div>
         ) : (
           <span className="text-xs text-[#636366]">—</span>
         )}
       </td>
 
       {/* Rank */}
-      <td className="py-4 px-4 hidden md:table-cell">
-        <RankBadge rank={player.rank} tier={player.rankTier} />
+      <td className="py-4 px-4 hidden md:table-cell text-center">
+        <div className="flex justify-center">
+          <RankBadge rank={player.rank} tier={player.rankTier} />
+        </div>
       </td>
 
       {/* Rating */}
@@ -84,7 +88,7 @@ export default function PlayerRow({
       </td>
 
       {/* W / L */}
-      <td className="py-4 px-5 text-right hidden lg:table-cell">
+      <td className="py-4 px-5 text-center hidden lg:table-cell">
         {player.placed ? (
           <span className="font-mono text-sm tabular-nums">
             <span style={{ color: "#30d158" }}>{player.wins}</span>

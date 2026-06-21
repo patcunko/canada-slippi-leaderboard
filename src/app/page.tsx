@@ -10,7 +10,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-[#222224]">
       <div className="w-full px-6 py-3 flex items-center gap-3 bg-[#cc0000] border-b border-[#990000]">
-        <span className="text-2xl leading-none">🍁</span>
+        <img src="/maple-leaf.svg" alt="" aria-hidden="true" style={{ width: 28, height: 28 }} />
         <span className="text-white font-bold text-lg tracking-wide">
           {LEADERBOARD_REGION} · Slippi
         </span>

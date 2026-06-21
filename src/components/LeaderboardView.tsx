@@ -1,21 +1,39 @@
 "use client";
 import { useState, useMemo } from "react";
-import { SlippiPlayer } from "@/lib/slippi";
+import Image from "next/image";
+import { SlippiPlayer, getRank } from "@/lib/slippi";
 import { PROVINCE_NAMES } from "@/config/players";
 import PlayerRow from "./PlayerRow";
+
+const RANK_ICON: Record<string, string> = {
+  "Bronze 1": "/ranks/bronze_1.svg", "Bronze 2": "/ranks/bronze_2.svg", "Bronze 3": "/ranks/bronze_3.svg",
+  "Silver 1": "/ranks/silver_1.svg", "Silver 2": "/ranks/silver_2.svg", "Silver 3": "/ranks/silver_3.svg",
+  "Gold 1": "/ranks/gold_1.svg", "Gold 2": "/ranks/gold_2.svg", "Gold 3": "/ranks/gold_3.svg",
+  "Platinum 1": "/ranks/platinum_1.svg", "Platinum 2": "/ranks/platinum_2.svg", "Platinum 3": "/ranks/platinum_3.svg",
+  "Diamond 1": "/ranks/diamond_1.svg", "Diamond 2": "/ranks/diamond_2.svg", "Diamond 3": "/ranks/diamond_3.svg",
+  "Master 1": "/ranks/master_1.svg", "Master 2": "/ranks/master_2.svg", "Master 3": "/ranks/master_3.svg",
+  "Grandmaster": "/ranks/grandmaster.svg",
+};
 
 function AverageStat({ players }: { players: SlippiPlayer[] }) {
   const placed = players.filter((p) => p.placed);
   if (placed.length === 0) return null;
   const avg = placed.reduce((s, p) => s + p.ratingOrdinal, 0) / placed.length;
+  const { name: rankName } = getRank(avg, null);
+  const iconSrc = RANK_ICON[rankName];
   return (
     <div
       className="rounded-lg px-5 py-3 mb-5 flex items-center gap-4"
       style={{ background: "#2c2c2e", border: "1px solid #48484a" }}
     >
+      {iconSrc && (
+        <Image src={iconSrc} alt={rankName} width={40} height={40} className="object-contain" unoptimized />
+      )}
       <div>
         <p className="text-[10px] uppercase tracking-widest font-semibold text-[#636366]">Average Rating</p>
-        <p className="text-xl font-bold font-mono tabular-nums text-[#f2f2f7] mt-0.5">{avg.toFixed(1)}</p>
+        <p className="text-xl font-bold font-mono tabular-nums text-[#f2f2f7] mt-0.5">
+          {avg.toFixed(1)} <span className="text-sm font-normal text-[#636366]">{rankName}</span>
+        </p>
       </div>
       <div className="w-px self-stretch bg-[#48484a]" />
       <div>
@@ -100,10 +118,10 @@ export default function LeaderboardView({ players }: { players: SlippiPlayer[] }
               >
                 <th className="py-3 px-5 text-center w-14">Rank</th>
                 <th className="py-3 px-4 text-left">Player</th>
-                <th className="py-3 px-4 text-left hidden sm:table-cell">Characters</th>
-                <th className="py-3 px-4 text-left hidden md:table-cell">Tier</th>
+                <th className="py-3 px-4 text-center hidden sm:table-cell">Characters</th>
+                <th className="py-3 px-4 text-center hidden md:table-cell">Tier</th>
                 <th className="py-3 px-4 text-right">Rating</th>
-                <th className="py-3 px-5 text-right hidden lg:table-cell">W / L</th>
+                <th className="py-3 px-5 text-center hidden lg:table-cell">W / L</th>
               </tr>
             </thead>
             <tbody>
