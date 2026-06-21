@@ -1,5 +1,3 @@
-"use cache";
-import { cacheLife } from "next/cache";
 import { PlayerConfig } from "@/config/players";
 import { SlippiPlayer, getRank, SlippiCharacter } from "@/lib/slippi";
 
@@ -95,8 +93,7 @@ async function fetchSlippiPlayer(
   }
 }
 
-export async function fetchAllPlayers(configs: PlayerConfig[], _v = process.env.CACHE_VERSION ?? "1"): Promise<SlippiPlayer[]> {
-  cacheLife("hours");
+export async function fetchAllPlayers(configs: PlayerConfig[]): Promise<SlippiPlayer[]> {
   const idToken = await getFirebaseIdToken();
   const authHeader = idToken ? `Bearer ${idToken}` : null;
 
@@ -112,7 +109,6 @@ export async function fetchAllPlayers(configs: PlayerConfig[], _v = process.env.
   }
   const valid = results.filter((p): p is SlippiPlayer => p !== null);
 
-  // Don't cache empty results — throw so Next.js retries next request
   if (valid.length === 0) {
     throw new Error("Slippi API returned no data");
   }
