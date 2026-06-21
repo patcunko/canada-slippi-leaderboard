@@ -95,13 +95,13 @@ async function fetchSlippiPlayer(
   }
 }
 
-export async function fetchAllPlayers(configs: PlayerConfig[]): Promise<SlippiPlayer[]> {
+export async function fetchAllPlayers(configs: PlayerConfig[], _v = process.env.CACHE_VERSION ?? "1"): Promise<SlippiPlayer[]> {
   cacheLife("hours");
   const idToken = await getFirebaseIdToken();
   const authHeader = idToken ? `Bearer ${idToken}` : null;
 
-  const BATCH = 10;
-  const DELAY_MS = 200;
+  const BATCH = 5;
+  const DELAY_MS = 500;
   const results: (SlippiPlayer | null)[] = [];
   for (let i = 0; i < configs.length; i += BATCH) {
     if (i > 0) await new Promise((r) => setTimeout(r, DELAY_MS));
