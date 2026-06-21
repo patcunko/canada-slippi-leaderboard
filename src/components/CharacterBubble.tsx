@@ -9,15 +9,32 @@ const STROKE = 2.5;
 const R = (SIZE / 2) - STROKE;
 const CIRC = 2 * Math.PI * R;
 
-const KNOWN_CHARS = new Set([
-  "mario","luigi","peach","yoshi","dk","cptfalcon","ganon","falco","fox",
-  "ness","ice_climbers","kirby","samus","zelda","sheik","link","young_link","pichu",
-  "pikachu","jigglypuff","mewtwo","mr_game_and_watch","marth","roy","doc","bowser",
-]);
+// Normalize API character keys (which vary in format) to our icon filenames
+const CHAR_NORMALIZE: Record<string, string> = {
+  mario: "mario", luigi: "luigi", peach: "peach", yoshi: "yoshi",
+  dk: "dk", donkeykong: "dk", donkey_kong: "dk",
+  cptfalcon: "cptfalcon", captain_falcon: "cptfalcon", captainfalcon: "cptfalcon",
+  ganon: "ganon", ganondorf: "ganon",
+  falco: "falco", fox: "fox",
+  ness: "ness",
+  ice_climbers: "ice_climbers", iceclimbers: "ice_climbers", popo: "ice_climbers",
+  kirby: "kirby",
+  samus: "samus",
+  zelda: "zelda", sheik: "sheik",
+  link: "link",
+  young_link: "young_link", younglink: "young_link",
+  pichu: "pichu", pikachu: "pikachu",
+  jigglypuff: "jigglypuff", puff: "jigglypuff",
+  mewtwo: "mewtwo",
+  mr_game_and_watch: "mr_game_and_watch", mrgameandwatch: "mr_game_and_watch", gnw: "mr_game_and_watch",
+  marth: "marth", roy: "roy",
+  doc: "doc", drmario: "doc", dr_mario: "doc",
+  bowser: "bowser",
+};
 
 function iconPath(key: string): string {
-  const k = key.toLowerCase();
-  return KNOWN_CHARS.has(k) ? `/characters/${k}.png` : "/characters/unknown.png";
+  const normalized = CHAR_NORMALIZE[key.toLowerCase().replace(/\s/g, "_")];
+  return normalized ? `/characters/${normalized}.png` : "/characters/unknown.png";
 }
 
 function CharBubble({
