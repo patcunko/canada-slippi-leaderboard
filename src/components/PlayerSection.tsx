@@ -5,7 +5,7 @@ import LeaderboardView from "@/components/LeaderboardView";
 
 export default async function PlayerSection() {
   "use cache";
-  cacheLife("hours");
+  cacheLife({ stale: 300, revalidate: 43200, expire: 86400 });
   cacheTag("players-v4");
 
   const cachedAt = new Date().toLocaleString("en-CA", {
