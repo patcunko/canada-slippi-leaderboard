@@ -34,6 +34,17 @@ export default function Home() {
         <p className="mt-5 text-xs text-[#48484a] text-center">
           Data from the unofficial Slippi GG API · Rankings may not reflect real-time standings
         </p>
+        <p className="mt-2 text-xs text-[#48484a] text-center">
+          Maintained by Cunko ·{" "}
+          <a
+            href="https://github.com/patcunko/canada-slippi-leaderboard"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-[#636366] transition-colors"
+          >
+            Open source on GitHub
+          </a>
+        </p>
       </div>
     </div>
   );
