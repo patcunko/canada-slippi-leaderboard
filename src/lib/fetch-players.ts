@@ -101,8 +101,10 @@ export async function fetchAllPlayers(configs: PlayerConfig[]): Promise<SlippiPl
   const authHeader = idToken ? `Bearer ${idToken}` : null;
 
   const BATCH = 10;
+  const DELAY_MS = 200;
   const results: (SlippiPlayer | null)[] = [];
   for (let i = 0; i < configs.length; i += BATCH) {
+    if (i > 0) await new Promise((r) => setTimeout(r, DELAY_MS));
     const batch = await Promise.all(
       configs.slice(i, i + BATCH).map((c) => fetchSlippiPlayer(c, authHeader))
     );
