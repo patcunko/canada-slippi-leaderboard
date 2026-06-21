@@ -4,13 +4,34 @@ import { SlippiPlayer } from "@/lib/slippi";
 import { PROVINCE_NAMES } from "@/config/players";
 import PlayerRow from "./PlayerRow";
 
+function AverageStat({ players }: { players: SlippiPlayer[] }) {
+  const placed = players.filter((p) => p.placed);
+  if (placed.length === 0) return null;
+  const avg = placed.reduce((s, p) => s + p.ratingOrdinal, 0) / placed.length;
+  return (
+    <div
+      className="rounded-lg px-5 py-3 mb-5 flex items-center gap-4"
+      style={{ background: "#2c2c2e", border: "1px solid #48484a" }}
+    >
+      <div>
+        <p className="text-[10px] uppercase tracking-widest font-semibold text-[#636366]">Average Rating</p>
+        <p className="text-xl font-bold font-mono tabular-nums text-[#f2f2f7] mt-0.5">{avg.toFixed(1)}</p>
+      </div>
+      <div className="w-px self-stretch bg-[#48484a]" />
+      <div>
+        <p className="text-[10px] uppercase tracking-widest font-semibold text-[#636366]">Placed Players</p>
+        <p className="text-xl font-bold font-mono tabular-nums text-[#f2f2f7] mt-0.5">{placed.length}</p>
+      </div>
+    </div>
+  );
+}
+
 export default function LeaderboardView({ players }: { players: SlippiPlayer[] }) {
   const [province, setProvince] = useState<string>("ALL");
 
   const provinces = useMemo(() => {
     const set = new Set(players.map((p) => p.province));
     return Array.from(set).sort((a, b) => {
-      // Sort by player count descending, then alphabetically
       const countA = players.filter((p) => p.province === a).length;
       const countB = players.filter((p) => p.province === b).length;
       return countB - countA || a.localeCompare(b);
@@ -22,8 +43,8 @@ export default function LeaderboardView({ players }: { players: SlippiPlayer[] }
     [players, province]
   );
 
-  // Global rank positions (across all players, not just filtered)
-  const rankMap = useMemo(
+  // Global rank map — only used when showing all provinces
+  const globalRankMap = useMemo(
     () => Object.fromEntries(players.map((p, i) => [p.connectCode, i + 1])),
     [players]
   );
@@ -60,6 +81,8 @@ export default function LeaderboardView({ players }: { players: SlippiPlayer[] }
         ))}
       </div>
 
+      <AverageStat players={filtered} />
+
       {filtered.length === 0 ? (
         <div
           className="rounded-lg px-6 py-16 text-center border"
@@ -84,11 +107,11 @@ export default function LeaderboardView({ players }: { players: SlippiPlayer[] }
               </tr>
             </thead>
             <tbody>
-              {filtered.map((player) => (
+              {filtered.map((player, i) => (
                 <PlayerRow
                   key={player.connectCode}
                   player={player}
-                  position={rankMap[player.connectCode]}
+                  position={province === "ALL" ? globalRankMap[player.connectCode] : i + 1}
                 />
               ))}
             </tbody>
