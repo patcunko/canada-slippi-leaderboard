@@ -44,7 +44,7 @@ function AverageStat({ players }: { players: SlippiPlayer[] }) {
   );
 }
 
-export default function LeaderboardView({ players }: { players: SlippiPlayer[] }) {
+export default function LeaderboardView({ players, cachedAt }: { players: SlippiPlayer[]; cachedAt?: string }) {
   const [province, setProvince] = useState<string>("ALL");
 
   const provinces = useMemo(() => {
@@ -69,6 +69,10 @@ export default function LeaderboardView({ players }: { players: SlippiPlayer[] }
 
   return (
     <>
+      {cachedAt && (
+        <p className="text-xs text-[#48484a] mb-4">Last fetched: {cachedAt} ET · Updates every 12 hours</p>
+      )}
+
       {/* Province filter pills */}
       <div className="flex flex-wrap gap-2 mb-5">
         <button

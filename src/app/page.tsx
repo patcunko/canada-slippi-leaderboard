@@ -2,7 +2,6 @@ import { Suspense } from "react";
 import { LEADERBOARD_TITLE, LEADERBOARD_REGION } from "@/config/players";
 import PlayerSection from "@/components/PlayerSection";
 import PlayerErrorBoundary from "@/components/PlayerErrorBoundary";
-import Timestamp from "@/components/Timestamp";
 
 export const maxDuration = 60;
 
@@ -19,9 +18,7 @@ export default function Home() {
       <div className="mx-auto max-w-5xl px-4 py-8">
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-[#f2f2f7]">{LEADERBOARD_TITLE}</h1>
-          <p className="mt-1 text-sm text-[#636366]">
-            Updates every 12 hours · Last cached: <Suspense fallback={null}><Timestamp /></Suspense>
-          </p>
+          <p className="mt-1 text-sm text-[#636366]">Canada Slippi GG Ranked Leaderboard</p>
         </div>
 
         <PlayerErrorBoundary>

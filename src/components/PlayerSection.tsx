@@ -8,6 +8,12 @@ export default async function PlayerSection() {
   cacheLife("hours");
   cacheTag("players-v4");
 
+  const cachedAt = new Date().toLocaleString("en-CA", {
+    timeZone: "America/Toronto",
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
+
   const players = await fetchAllPlayers(PLAYERS);
-  return <LeaderboardView players={players} />;
+  return <LeaderboardView players={players} cachedAt={cachedAt} />;
 }
