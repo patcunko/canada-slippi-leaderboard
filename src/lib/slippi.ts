@@ -61,12 +61,16 @@ export function getRank(elo: number, dailyGlobalPlacement: number | null): { nam
 
 const CHARACTER_NAMES: Record<string, string> = {
   MARIO: "Mario", LUIGI: "Luigi", PEACH: "Peach", YOSHI: "Yoshi",
-  DK: "Donkey Kong", CPTFALCON: "Captain Falcon", GANON: "Ganondorf",
+  DK: "Donkey Kong", DONKEY_KONG: "Donkey Kong",
+  CPTFALCON: "Captain Falcon", CAPTAIN_FALCON: "Captain Falcon",
+  GANON: "Ganondorf", GANONDORF: "Ganondorf",
   FALCO: "Falco", FOX: "Fox", NESS: "Ness", ICE_CLIMBERS: "Ice Climbers",
   KIRBY: "Kirby", SAMUS: "Samus", ZELDA: "Zelda", LINK: "Link",
   YOUNG_LINK: "Young Link", PICHU: "Pichu", PIKACHU: "Pikachu",
-  JIGGLYPUFF: "Jigglypuff", MEWTWO: "Mewtwo", MR_GAME_AND_WATCH: "Mr. Game & Watch",
-  MARTH: "Marth", ROY: "Roy", DOC: "Dr. Mario", SHEIK: "Sheik",
+  JIGGLYPUFF: "Jigglypuff", MEWTWO: "Mewtwo",
+  MR_GAME_AND_WATCH: "Mr. Game & Watch", GAME_AND_WATCH: "Mr. Game & Watch",
+  MARTH: "Marth", ROY: "Roy", DOC: "Dr. Mario", DR_MARIO: "Dr. Mario", SHEIK: "Sheik",
+  BOWSER: "Bowser",
 };
 
 export function getCharacterName(key: string): string {

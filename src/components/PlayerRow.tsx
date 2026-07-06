@@ -1,5 +1,6 @@
 "use client";
 import { SlippiPlayer } from "@/lib/slippi";
+import { PROVINCE_COLORS } from "@/config/players";
 import RankBadge from "./RankBadge";
 import CharacterBubbles from "./CharacterBubble";
 import { useState } from "react";
@@ -14,6 +15,7 @@ export default function PlayerRow({
   position: number;
 }) {
   const [hovered, setHovered] = useState(false);
+  const provinceColor = PROVINCE_COLORS[player.province] ?? { text: "#ff4444", bg: "#cc000022", border: "#cc000055" };
   const winRate =
     player.wins + player.losses > 0
       ? ((player.wins / (player.wins + player.losses)) * 100).toFixed(1)
@@ -50,7 +52,7 @@ export default function PlayerRow({
             </a>
             <span
               className="text-[10px] font-bold px-1.5 py-0.5 rounded"
-              style={{ background: "#cc000022", color: "#ff4444", border: "1px solid #cc000044" }}
+              style={{ background: provinceColor.bg, color: provinceColor.text, border: `1px solid ${provinceColor.border}` }}
             >
               {player.province}
             </span>

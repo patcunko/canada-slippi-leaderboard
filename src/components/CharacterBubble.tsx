@@ -27,12 +27,13 @@ const CHAR_NORMALIZE: Record<string, string> = {
   jigglypuff: "jigglypuff", puff: "jigglypuff",
   mewtwo: "mewtwo",
   mr_game_and_watch: "mr_game_and_watch", mrgameandwatch: "mr_game_and_watch", gnw: "mr_game_and_watch",
+  game_and_watch: "mr_game_and_watch", gameandwatch: "mr_game_and_watch",
   marth: "marth", roy: "roy",
   doc: "doc", drmario: "doc", dr_mario: "doc",
   bowser: "bowser",
 };
 
-function iconPath(key: string): string {
+export function iconPath(key: string): string {
   const normalized = CHAR_NORMALIZE[key.toLowerCase().replace(/\s/g, "_")];
   return normalized ? `/characters/${normalized}.png` : "/characters/unknown.png";
 }

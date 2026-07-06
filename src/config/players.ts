@@ -439,6 +439,22 @@ export const PLAYERS: PlayerConfig[] = [
 export const LEADERBOARD_TITLE = "Canada Slippi Leaderboard";
 export const LEADERBOARD_REGION = "Canada";
 
+export const PROVINCE_COLORS: Record<string, { text: string; bg: string; border: string }> = {
+  ON: { text: "#60a5fa", bg: "#60a5fa22", border: "#60a5fa55" },
+  QC: { text: "#a78bfa", bg: "#a78bfa22", border: "#a78bfa55" },
+  BC: { text: "#34d399", bg: "#34d39922", border: "#34d39955" },
+  AB: { text: "#fbbf24", bg: "#fbbf2422", border: "#fbbf2455" },
+  MB: { text: "#f472b6", bg: "#f472b622", border: "#f472b655" },
+  SK: { text: "#fb923c", bg: "#fb923c22", border: "#fb923c55" },
+  NS: { text: "#38bdf8", bg: "#38bdf822", border: "#38bdf855" },
+  NB: { text: "#4ade80", bg: "#4ade8022", border: "#4ade8055" },
+  NL: { text: "#e879f9", bg: "#e879f922", border: "#e879f955" },
+  PE: { text: "#f87171", bg: "#f8717122", border: "#f8717155" },
+  YT: { text: "#facc15", bg: "#facc1522", border: "#facc1555" },
+  NT: { text: "#94a3b8", bg: "#94a3b822", border: "#94a3b855" },
+  NU: { text: "#c084fc", bg: "#c084fc22", border: "#c084fc55" },
+};
+
 export const PROVINCE_NAMES: Record<string, string> = {
   BC: "British Columbia",
   AB: "Alberta",
