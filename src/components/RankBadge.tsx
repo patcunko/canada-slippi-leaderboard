@@ -2,7 +2,7 @@ import Image from "next/image";
 import { RankTier } from "@/lib/slippi";
 
 // Maps rank name → SVG icon file in /public/ranks/ (no background)
-const RANK_ICON: Record<string, string> = {
+export const RANK_ICON: Record<string, string> = {
   "Bronze 1":    "/ranks/bronze_1.svg",
   "Bronze 2":    "/ranks/bronze_2.svg",
   "Bronze 3":    "/ranks/bronze_3.svg",
@@ -24,7 +24,7 @@ const RANK_ICON: Record<string, string> = {
   "Grandmaster": "/ranks/grandmaster.svg",
 };
 
-const TIER_TEXT: Record<RankTier, string> = {
+export const TIER_TEXT: Record<RankTier, string> = {
   bronze:      "#cd7f3c",
   silver:      "#c0c0d0",
   gold:        "#f5c518",
