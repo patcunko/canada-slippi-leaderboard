@@ -1,3 +1,4 @@
+import { cacheLife, cacheTag } from "next/cache";
 import { PlayerConfig } from "@/config/players";
 import { SlippiPlayer, getRank, SlippiCharacter } from "@/lib/slippi";
 
@@ -102,7 +103,16 @@ async function fetchBatch(
   }
 }
 
-export async function fetchAllPlayers(configs: PlayerConfig[]): Promise<SlippiPlayer[]> {
+export interface PlayersResult {
+  players: SlippiPlayer[];
+  cachedAt: string;
+}
+
+export async function fetchAllPlayers(configs: PlayerConfig[]): Promise<PlayersResult> {
+  "use cache";
+  cacheLife({ stale: 300, revalidate: 43200, expire: 86400 });
+  cacheTag("players-v4");
+
   const idToken = await getFirebaseIdToken();
   const authHeader = idToken ? `Bearer ${idToken}` : null;
 
@@ -120,9 +130,17 @@ export async function fetchAllPlayers(configs: PlayerConfig[]): Promise<SlippiPl
     throw new Error("Slippi API returned no data");
   }
 
-  return valid.sort((a, b) => {
+  const players = valid.sort((a, b) => {
     if (a.placed && !b.placed) return -1;
     if (!a.placed && b.placed) return 1;
     return b.ratingOrdinal - a.ratingOrdinal;
   });
+
+  const cachedAt = new Date().toLocaleString("en-CA", {
+    timeZone: "America/Toronto",
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
+
+  return { players, cachedAt };
 }

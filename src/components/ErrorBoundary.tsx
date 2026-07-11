@@ -2,6 +2,8 @@
 import { Component, ReactNode } from "react";
 
 interface Props {
+  message: string;
+  compact?: boolean;
   children: ReactNode;
 }
 
@@ -9,7 +11,7 @@ interface State {
   hasError: boolean;
 }
 
-export default class PlayerErrorBoundary extends Component<Props, State> {
+export default class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = { hasError: false };
@@ -21,11 +23,12 @@ export default class PlayerErrorBoundary extends Component<Props, State> {
 
   render() {
     if (this.state.hasError) {
+      if (this.props.compact) {
+        return <p className="text-xs text-[#636366]">{this.props.message}</p>;
+      }
       return (
-        <div className="rounded-lg px-6 py-16 text-center bg-[#2c2c2e] border border-[#48484a]">
-          <p className="text-[#636366] text-base">
-            Could not load player data. The Slippi API may be temporarily unavailable.
-          </p>
+        <div className="rounded-lg px-6 py-16 text-center border" style={{ background: "#18181a", borderColor: "#2f2f31" }}>
+          <p className="text-[#636366] text-base">{this.props.message}</p>
         </div>
       );
     }
