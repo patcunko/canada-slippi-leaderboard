@@ -223,6 +223,12 @@ export const PLAYERS: PlayerConfig[] = [
   { code: "DRNT#0",     province: "ON" },
   { code: "KERR#567",   province: "ON" },
   { code: "AZUR#889",   province: "ON" },
+  { code: "DTR#451",    province: "ON" },
+  { code: "STOC#507",   province: "ON" },
+  { code: "SHPX#987",   province: "ON" },
+  { code: "GAHR#668",   province: "ON" },
+  { code: "TOKI#0",     province: "ON" },
+  { code: "REMO#405",   province: "ON" },
 
   // Quebec
   { code: "OLIP#180",   province: "QC" },
@@ -411,6 +417,7 @@ export const PLAYERS: PlayerConfig[] = [
   { code: "VENX#957",   province: "BC" },
   { code: "MTRX#833",   province: "BC" },
   { code: "ZEDD#556",   province: "BC" },
+  { code: "TRAD#394",   province: "BC" },
 
   // New Brunswick
   { code: "DRIZZY#8",   province: "NB" },
